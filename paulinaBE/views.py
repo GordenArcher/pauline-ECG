@@ -337,11 +337,17 @@ def change_config(request):
         tax_amount = data.get("tax_amount")
         dollar_rate = data.get("dollar_rate")
 
-        config = Config.objects.first()
+        config, created = Config.objects.get_or_create(
+            defaults={
+                "tax_amount": tax_amount,
+                "dollar_rate": dollar_rate
+            }
+        )
 
-        config.tax_amount = tax_amount
-        config.dollar_rate = dollar_rate
-        config.save()
+        if not created:
+            config.tax_amount = tax_amount
+            config.dollar_rate = dollar_rate
+            config.save()
 
         config_serializer = ConfigSerializer(config)
 
